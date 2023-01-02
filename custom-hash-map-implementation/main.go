@@ -28,7 +28,7 @@ package main
 // - open addressing
 // - double hashing
 // the code below implements separate chaining with linked lists
-// 
+//
 // fetch is identical to insert -- pass the key as input to the hash function
 // and get a hash value, which is then mapped to the array using the `getIndex`
 // function
@@ -36,13 +36,13 @@ package main
 // - check if the key on that index is matching what we are looking for
 //      - if yes, we have our match
 // - if the key does not match, we check if its next value is not nil -- basically
-//   checking for collision and find that element in the separate chained linked 
+//   checking for collision and find that element in the separate chained linked
 //   list
 // - if both of the above fail, the requested key does not exist in our hash map
 
 import (
-    "bytes"
-    "fmt"
+	"bytes"
+	"fmt"
 )
 
 // this is assuming that we have a fixed size array and don't account for resizing.
@@ -55,7 +55,7 @@ type Node struct {
 }
 
 func (n *Node) String() string {
-    return fmt.Sprintf("<Key: %s, Value: %s>\n", n.key, n.value)
+	return fmt.Sprintf("<Key: %s, Value: %s>\n", n.key, n.value)
 }
 
 type HashMap struct {
@@ -63,66 +63,66 @@ type HashMap struct {
 }
 
 func (h *HashMap) Insert(key string, value string) {
-    // calls the hash function internally and gives us the index of our array 
-    // where we store the key-value pair
+	// calls the hash function internally and gives us the index of our array
+	// where we store the key-value pair
 	index := getIndex(key)
 
 	if h.Data[index] == nil {
 		// index is empty, so go ahead and insert
 		h.Data[index] = &Node{key: key, value: value, next: nil}
 	} else {
-        // this is a collision, get into linked-list mode
-        startingNode := h.Data[index]
-        for ; startingNode.next != nil; startingNode = startingNode.next {
-            if startingNode.key == key {
-                // the key exists, its a modifying operation
-                startingNode.value = value
-                return
-            }
-        }
-        startingNode.next = &Node{key: key, value:value, next: nil}
+		// this is a collision, get into linked-list mode
+		startingNode := h.Data[index]
+		for ; startingNode.next != nil; startingNode = startingNode.next {
+			if startingNode.key == key {
+				// the key exists, its a modifying operation
+				startingNode.value = value
+				return
+			}
+		}
+		startingNode.next = &Node{key: key, value: value, next: nil}
 	}
 }
 
 func (h *HashMap) Get(key string) (string, bool) {
-    index := getIndex(key)
-    if h.Data[index] != nil {
-        // key is on this index, but might be somewhere in the linked list
-        startingNode := h.Data[index]
-        for ; ; startingNode = startingNode.next {
-            if startingNode.key == key {
-                // key matched
-                return startingNode.value, true
-            }
+	index := getIndex(key)
+	if h.Data[index] != nil {
+		// key is on this index, but might be somewhere in the linked list
+		startingNode := h.Data[index]
+		for ; ; startingNode = startingNode.next {
+			if startingNode.key == key {
+				// key matched
+				return startingNode.value, true
+			}
 
-            if startingNode.next == nil {
-                break
-            }
-        }
-    }
+			if startingNode.next == nil {
+				break
+			}
+		}
+	}
 
-    // key does not exist
-    return "", false
+	// key does not exist
+	return "", false
 }
 
 // this overrides the default print output for our defined HashMap type
 // this is just a convenience method used for printing the entire HashMap in a
 // pretty format
 func (h *HashMap) String() string {
-    var output bytes.Buffer
-    fmt.Fprintln(&output, "{")
-    for _, n := range h.Data {
-        if n != nil {
-            fmt.Fprintf(&output, "\t%s: %s\n", n.key, n.value)
-            for node := n.next; node != nil; node = node.next {
-                fmt.Fprintf(&output, "\t%s: %s\n", node.key, node.value)
-            }
-        }
-    }
+	var output bytes.Buffer
+	fmt.Fprintln(&output, "{")
+	for _, n := range h.Data {
+		if n != nil {
+			fmt.Fprintf(&output, "\t%s: %s\n", n.key, n.value)
+			for node := n.next; node != nil; node = node.next {
+				fmt.Fprintf(&output, "\t%s: %s\n", node.key, node.value)
+			}
+		}
+	}
 
-    fmt.Fprintln(&output, "}")
+	fmt.Fprintln(&output, "}")
 
-    return output.String()
+	return output.String()
 }
 
 func NewDict() *HashMap {
@@ -130,18 +130,18 @@ func NewDict() *HashMap {
 }
 
 func main() {
-    a := NewDict()
-    a.Insert("name", "jake")
-    a.Insert("gender", "male")
-    a.Insert("city", "Boston")
-    a.Insert("lastname", "correnti")
-    if value, ok := a.Get("name"); ok {
-        fmt.Println(value)
-    } else {
-        fmt.Println("value did not match")
-    }
+	a := NewDict()
+	a.Insert("name", "jake")
+	a.Insert("gender", "male")
+	a.Insert("city", "Boston")
+	a.Insert("lastname", "correnti")
+	if value, ok := a.Get("name"); ok {
+		fmt.Println(value)
+	} else {
+		fmt.Println("value did not match")
+	}
 
-    fmt.Println(a)
+	fmt.Println(a)
 }
 
 // Jenkins hash function that produces 32 bit hashes
